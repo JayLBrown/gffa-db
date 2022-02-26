@@ -33,6 +33,7 @@ def prepare_film_list(film):
     film_list.append("description")
     film_attr = dict((k, film[k]) for k in ['episode_id', 'opening_crawl', 'director', 'producer', 'release_date', 'characters', 'planets', 'starships', 'vehicles', 'species'])
     film_list.append(json.dumps(film_attr))
+    film_list.append(json.dumps(film))
     film_list.append(datetime.datetime.now())
     film_list.append(datetime.datetime.now())
     return film_list
@@ -61,8 +62,10 @@ def convert_planet_data(planet):
 def prepare_planet_list(planet):
     planet_list = []
     planet_list.append(planet["name"])
+    planet_list.append("description")
     planet_attr = dict((k, planet[k]) for k in ['rotation_period', 'orbital_period', 'diameter', 'climate', 'gravity', 'terrain', 'surface_water', 'population', 'residents', 'films'])
     planet_list.append(json.dumps(planet_attr))
+    planet_list.append(json.dumps(planet))
     planet_list.append(datetime.datetime.now())
     planet_list.append(datetime.datetime.now())
     return planet_list
@@ -79,7 +82,7 @@ def main():
     
     for film in film_data:
         film_list = prepare_film_list(convert_film_data(film))
-        sql = """INSERT INTO public.film(title, description, attributes, date_created, date_modified) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (film_id) DO NOTHING"""
+        sql = """INSERT INTO public.film(title, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (film_id) DO NOTHING"""
         # Execute to insert records into film table
         cur.execute(sql, film_list)
         # Make the changes to the database persistent
@@ -90,7 +93,7 @@ def main():
     for planet in planet_data:
         if planet["name"] != "unknown":
             planet_list = prepare_planet_list(convert_planet_data(planet))
-            sql = """INSERT INTO public.planet(name, attributes, date_created, date_modified) VALUES (%s, %s, %s, %s) ON CONFLICT (planet_id) DO NOTHING"""
+            sql = """INSERT INTO public.planet(name, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (planet_id) DO NOTHING"""
             # Execute to insert records into planet table
             cur.execute(sql, planet_list)
             # Make the changes to the database persistent
