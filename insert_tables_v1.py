@@ -8,6 +8,9 @@ import gffa_utils
 film_data = gffa_utils.read_json('./data/swapi_json/swapi_films.json')
 planet_data = gffa_utils.read_json('./data/swapi_json/swapi_planets.json')
 species_data = gffa_utils.read_json('./data/swapi_json/swapi_species.json')
+people_data = gffa_utils.read_json('./data/swapi_json/swapi_people.json')
+starship_data = gffa_utils.read_json('./data/swapi_json/swapi_starships.json')
+vehicle_data = gffa_utils.read_json('./data/swapi_json/swapi_vehicles.json')
 
 # --------------------------------------------- GFFA FILM ---------------------------------------------
 # --------------- CONVERT FILM DATA ---------------
@@ -29,7 +32,7 @@ def prepare_film_list(film):
     film_list.append(film["title"])
     film_list.append("description")
     film_attr = dict((k, film[k]) for k in ['episode_id', 'opening_crawl', 'director', 'producer', 'release_date', 'characters', 'planets', 'starships', 'vehicles', 'species'])
-    film_list.append(json.dumps(film_attr, sort_keys=False))
+    film_list.append(json.dumps(film_attr))
     film_list.append(datetime.datetime.now())
     film_list.append(datetime.datetime.now())
     return film_list
@@ -64,25 +67,6 @@ def prepare_planet_list(planet):
     planet_list.append(datetime.datetime.now())
     return planet_list
 
-# --------------- PREPARE LANGUAGE LIST ---------------
-
-def prepare_language_list(species):
-    language_list = []
-    language_list.append(species["language"])
-    language_list.append("description")
-    # language_list.append("attributes")
-    language_list.append(datetime.datetime.now())
-    language_list.append(datetime.datetime.now())
-    return language_list
-
-# --------------- REMOVE DUPLICATES LANGUAGE LIST ---------------
-
-# def refine_language_list(languages):
-#     result = []
-#     for language in languages:
-#         if language.get('name') not in result:
-#             result.append(language.get('name'))
-
 def main():
 
     # Connect to an existing database
@@ -111,16 +95,6 @@ def main():
             cur.execute(sql, planet_list)
             # Make the changes to the database persistent
             conn.commit()
-
-    # --------------- INSERT INTO LANGUAGE TABLE ---------------
-
-    for species in species_data:
-        language_list = prepare_language_list(species)
-        sql = """INSERT INTO public.language(name, description, date_created, date_modified) VALUES (%s, %s, %s, %s) ON CONFLICT (language_id) DO NOTHING"""
-        # Execute to insert records into language table
-        cur.execute(sql, language_list)
-        # Make the changes to the database persistent
-        conn.commit()
 
     # Close cursor
     cur.close()
