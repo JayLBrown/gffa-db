@@ -1,3 +1,4 @@
+
 [
   {
     "name": "Human",
@@ -127,7 +128,7 @@
     "eye_colors": "black",
     "average_lifespan": "unknown",
     "homeworld": "https://swapi.py4e.com/api/planets/23/",
-    "language": "Galatic Basic",
+    "language": "galactic basic",
     "people": [
       "https://swapi.py4e.com/api/people/15/"
     ],
