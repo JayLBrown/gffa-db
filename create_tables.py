@@ -17,7 +17,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.film
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
-    PRIMARY KEY (film_id)
+    PRIMARY KEY (film_id),
+    UNIQUE (title)
 )"""
 
 # Execute to create film table
@@ -34,7 +35,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.planet
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
-    PRIMARY KEY (planet_id)
+    PRIMARY KEY (planet_id),
+    UNIQUE (name)
 )"""
 
 # Execute to create planet table
@@ -51,7 +53,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.language
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
-    PRIMARY KEY (language_id)
+    PRIMARY KEY (language_id),
+    UNIQUE (name)
 )"""
 
 # Execute to create language table
@@ -70,7 +73,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.sentient_being_type
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
     PRIMARY KEY (sentient_being_type_id),
-    FOREIGN KEY (language_id) REFERENCES public.language(language_id)
+    FOREIGN KEY (language_id) REFERENCES public.language(language_id),
+    UNIQUE (name)
 )"""
 
 # Execute to create sentient_being_type table
@@ -92,7 +96,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.sentient_being
     date_modified TIMESTAMP,
     PRIMARY KEY (sentient_being_id),
     FOREIGN KEY (sentient_being_type_id) REFERENCES public.sentient_being_type(sentient_being_type_id),
-    FOREIGN KEY (home_world_id) REFERENCES public.planet(planet_id)
+    FOREIGN KEY (home_world_id) REFERENCES public.planet(planet_id),
+    UNIQUE (name_first, name_last)
 )"""
 
 # Execute to create sentient_being table
@@ -109,7 +114,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.crew_role
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
-    PRIMARY KEY (crew_role_id)
+    PRIMARY KEY (crew_role_id),
+    UNIQUE (name)
 )"""
 
 # Execute to create crew_role table
@@ -126,7 +132,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.vehicle_type
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
-    PRIMARY KEY (vehicle_type_id)
+    PRIMARY KEY (vehicle_type_id),
+    UNIQUE (name)
 )"""
 
 # Execute to create vehicle_type table
@@ -143,7 +150,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.vehicle_class
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
-	PRIMARY KEY (vehicle_class_id)
+	PRIMARY KEY (vehicle_class_id),
+    UNIQUE (name)
 )"""
 
 # Execute to create vehicle_class table
@@ -164,7 +172,8 @@ sql = """CREATE TABLE IF NOT EXISTS public.vehicle
     date_modified TIMESTAMP,
 	PRIMARY KEY (vehicle_id),
     FOREIGN KEY (vehicle_type_id) REFERENCES public.vehicle_type(vehicle_type_id),
-    FOREIGN KEY (vehicle_class_id) REFERENCES public.vehicle_class(vehicle_class_id)
+    FOREIGN KEY (vehicle_class_id) REFERENCES public.vehicle_class(vehicle_class_id),
+    UNIQUE (model)
 )"""
 
 # Execute to create vehicle table

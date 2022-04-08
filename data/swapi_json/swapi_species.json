@@ -128,7 +128,7 @@
     "eye_colors": "black",
     "average_lifespan": "unknown",
     "homeworld": "https://swapi.py4e.com/api/planets/23/",
-    "language": "galactic basic",
+    "language": "Galactic Basic",
     "people": [
       "https://swapi.py4e.com/api/people/15/"
     ],
@@ -171,7 +171,7 @@
     "eye_colors": "brown, green, yellow",
     "average_lifespan": "900",
     "homeworld": "https://swapi.py4e.com/api/planets/28/",
-    "language": "Galactic basic",
+    "language": "Galactic Basic",
     "people": [
       "https://swapi.py4e.com/api/people/20/"
     ],
@@ -301,7 +301,7 @@
     "eye_colors": "orange",
     "average_lifespan": "unknown",
     "homeworld": "https://swapi.py4e.com/api/planets/8/",
-    "language": "Gungan basic",
+    "language": "Gungan Basic",
     "people": [
       "https://swapi.py4e.com/api/people/36/",
       "https://swapi.py4e.com/api/people/37/",

@@ -77,8 +77,8 @@ def extract_language_list(species_data):
     unknowns = ('n/a', 'none', 'unknown')
     result = []
     for species in species_data:
-        if species["language"].lower() not in unknowns and species["language"].lower() not in result:
-            result.append(species["language"].lower())
+        if species["language"] not in unknowns and species["language"] not in result:
+            result.append(species["language"])
     return result
 
 # --------------- CONVERT SENTIENT_BEING_TYPE DATA ---------------
@@ -104,25 +104,24 @@ def convert_sentient_being_type_data(sentient_being_type):
 def prepare_sentient_being_type_list(sentient_being_type):
     sentient_being_type_list = []
     sentient_being_type_list.append(sentient_being_type["name"])
-    sentient_being_type_list.append(1)
+    sentient_being_type_list.append(sentient_being_type["language"])
     sentient_being_type_list.append("description")
     sentient_being_type_attr = dict((k, sentient_being_type[k]) for k in ['classification', 'designation', 'average_height', 'skin_colors', 'hair_colors', 'eye_colors', 'average_lifespan', 'homeworld', 'language', 'people', 'films'])
     sentient_being_type_list.append(json.dumps(sentient_being_type_attr))
     sentient_being_type_list.append(json.dumps(sentient_being_type))
     sentient_being_type_list.append(datetime.datetime.now())
     sentient_being_type_list.append(datetime.datetime.now())
-    print(sentient_being_type_list)
     return sentient_being_type_list
 
 # --------------------------------------------- GFFA VEHICLE ---------------------------------------------
-# --------------- EXTRACT UNIQUUE VEHICLE_CLASS DATA ---------------
+# --------------- EXTRACT UNIQUE VEHICLE_CLASS DATA ---------------
 
 def extract_vehicle_class_list(vehicle_data):
     unknowns = ('n/a', 'none', 'unknown')
     result = []
     for vehicle in vehicle_data:
-        if vehicle["vehicle_class"].lower() not in unknowns and vehicle["vehicle_class"].lower() not in result:
-            result.append(vehicle["vehicle_class"].lower())
+        if vehicle["vehicle_class"] not in unknowns and vehicle["vehicle_class"] not in result:
+            result.append(vehicle["vehicle_class"])
     return result
 
 def main():
@@ -137,7 +136,7 @@ def main():
     
     for film in film_data:
         film_list = prepare_film_list(convert_film_data(film))
-        sql = """INSERT INTO public.film(title, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (film_id) DO NOTHING"""
+        sql = """INSERT INTO public.film(title, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (title) DO NOTHING"""
         # Execute to insert records into film table
         cur.execute(sql, film_list)
         # Make the changes to the database persistent
@@ -148,7 +147,7 @@ def main():
     for planet in planet_data:
         if planet["name"] != "unknown":
             planet_list = prepare_planet_list(convert_planet_data(planet))
-            sql = """INSERT INTO public.planet(name, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (planet_id) DO NOTHING"""
+            sql = """INSERT INTO public.planet(name, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (name) DO NOTHING"""
             # Execute to insert records into planet table
             cur.execute(sql, planet_list)
             # Make the changes to the database persistent
@@ -158,30 +157,37 @@ def main():
     
     language_list = extract_language_list(species_data)
     for lang in language_list:
-        sql = """INSERT INTO public.language(name, date_created, date_modified) VALUES (%s, %s, %s) ON CONFLICT (language_id) DO NOTHING"""
+        sql = """INSERT INTO public.language(name, date_created, date_modified) VALUES (%s, %s, %s) ON CONFLICT (name) DO NOTHING"""
         # Execute to insert records into language table
         cur.execute(sql, (lang, datetime.datetime.now(), datetime.datetime.now()))
         # Make the changes to the database persistent
         conn.commit()
     
-    # --------------- INSERT AND UPDATE INTO SENTIENT_BEING_TYPE TABLE ---------------
+    # --------------- INSERT INTO SENTIENT_BEING_TYPE TABLE ---------------
     
     for species in species_data:
         sentient_being_type_list = prepare_sentient_being_type_list(convert_sentient_being_type_data(species))
-        sql = """INSERT INTO public.sentient_being_type(name, language_id, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (sentient_being_type_id) DO NOTHING"""
+        # If language is None, it will assign id 34 made for None
+        if sentient_being_type_list[1]!=None:
+            sql = """SELECT language_id from public.language WHERE name=%s"""
+            cur.execute(sql, (sentient_being_type_list[1],))
+            sentient_being_type_list[1] = cur.fetchone()
+        else:
+            sentient_being_type_list[1] = 1
+        sql = """INSERT INTO public.sentient_being_type(name, language_id, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (name) DO NOTHING"""
         # Execute to insert records into sentient_being_type table
         cur.execute(sql, sentient_being_type_list)
-        sql = """UPDATE sentient_being_type SET language_id=public.language.language_id from public.language WHERE public.sentient_being_type.name=%s and public.language.name=%s"""
-        # # Execute to insert records into sentient_being_type table
-        cur.execute(sql, (species["name"], species["language"]))
-        # # Make the changes to the database persistent
+        # Make the changes to the database persistent
         conn.commit()
     
+    # --------------- INSERT INTO SENTIENT_BEING TABLE ---------------
+    
+
     # --------------- INSERT INTO VEHICLE_CLASS TABLE ---------------
 
     vehicle_class_list = extract_vehicle_class_list(vehicle_data)
     for vehicle in vehicle_class_list:
-        sql = """INSERT INTO public.vehicle_class(name, date_created, date_modified) VALUES (%s, %s, %s) ON CONFLICT (vehicle_class_id) DO NOTHING"""
+        sql = """INSERT INTO public.vehicle_class(name, date_created, date_modified) VALUES (%s, %s, %s) ON CONFLICT (name) DO NOTHING"""
         # Execute to insert records into language table
         cur.execute(sql, (vehicle, datetime.datetime.now(), datetime.datetime.now()))
         # Make the changes to the database persistent
