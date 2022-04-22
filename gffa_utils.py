@@ -1,5 +1,12 @@
 import json
 
+# --------------- CONSTANTS ---------------
+
+UNKNOWNS = ('n/a', 'none', 'unknown', '')
+INT_KEYS = ('rotation_period', 'orbital_period', 'population', 'average_lifespan', 'cost_in_credits', 'max_atmosphering_speed', 'crew', 'passengers', 'cargo_capacity', 'consumables', 'MGLT')
+FLOAT_KEYS = ('diameter', 'surface_water', 'average_height', 'height', 'mass', 'length', 'hyperdrive_rating')
+LIST_KEYS = ('producer', 'terrain', 'skin_colors', 'hair_colors', 'eye_colors', 'people', 'films', 'hair_color', 'skin_color', 'films', 'species', 'vehicles', 'starships', 'manufacturer', 'pilots', 'films')
+
 # --------------- READ JSON ---------------
 
 def read_json(filepath, encoding='utf-8'):
