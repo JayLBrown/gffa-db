@@ -12,21 +12,19 @@ people_data = gffa_utils.read_json('./data/swapi_json/swapi_people.json')
 starship_data = gffa_utils.read_json('./data/swapi_json/swapi_starships.json')
 vehicle_data = gffa_utils.read_json('./data/swapi_json/swapi_vehicles.json')
 
-# --------------------------------------------- CONVERT DATA ---------------------------------------------
-
-def convert_data(data):
-    for key, val in data.items():
-        if val in gffa_utils.UNKNOWNS:
-                data[key] = gffa_utils.convert_to_none(val)
-        elif key in gffa_utils.INT_KEYS:
-                    data[key] = gffa_utils.convert_to_int(val)
-        elif key in gffa_utils.FLOAT_KEYS:
-            data[key] = gffa_utils.convert_to_float(val)
-        elif key in gffa_utils.LIST_KEYS:
-            data[key] = gffa_utils.convert_to_list(val, ', ')
-    return data
-
 # --------------------------------------------- GFFA FILM ---------------------------------------------
+# --------------- CONVERT FILM DATA ---------------
+
+def convert_film_data(film):
+    unknowns = ('n/a', 'none', 'unknown')
+    list_keys = ('producer')
+    for key, val in film.items():
+        if val in unknowns:
+                film[key] = gffa_utils.convert_to_none(val)
+        elif key in list_keys:
+            film[key] = gffa_utils.convert_to_list(val, ', ')
+    return film
+
 # --------------- PREPARE FILM LIST ---------------
 
 def prepare_film_list(film):
@@ -41,6 +39,24 @@ def prepare_film_list(film):
     return film_list
 
 # --------------------------------------------- GFFA PLANET ---------------------------------------------
+# --------------- CONVERT PLANET DATA ---------------
+
+def convert_planet_data(planet):
+    unknowns = ('n/a', 'none', 'unknown')
+    int_keys = ('rotation_period', 'orbital_period', 'population')
+    float_keys = ('diameter', 'surface_water')
+    list_keys = ('producer', 'terrain')
+    for key, val in planet.items():
+        if val in unknowns:
+                planet[key] = gffa_utils.convert_to_none(val)
+        elif key in int_keys:
+                    planet[key] = gffa_utils.convert_to_int(val)
+        elif key in float_keys:
+            planet[key] = gffa_utils.convert_to_float(val)
+        elif key in list_keys:
+            planet[key] = gffa_utils.convert_to_list(val, ', ')
+    return planet
+
 # --------------- PREPARE PLANET LIST ---------------
 
 def prepare_planet_list(planet):
@@ -64,6 +80,24 @@ def extract_language_list(species_data):
         if species["language"] not in unknowns and species["language"] not in result:
             result.append(species["language"])
     return result
+
+# --------------- CONVERT SENTIENT_BEING_TYPE DATA ---------------
+
+def convert_sentient_being_type_data(sentient_being_type):
+    unknowns = ('n/a', 'none', 'unknown')
+    int_keys = ('average_lifespan')
+    float_keys = ('average_height')
+    list_keys = ('skin_colors', 'hair_colors', 'eye_colors', 'people', 'films')
+    for key, val in sentient_being_type.items():
+        if val in unknowns:
+            sentient_being_type[key] = gffa_utils.convert_to_none(val)
+        elif key in int_keys:
+            sentient_being_type[key] = gffa_utils.convert_to_int(val)
+        elif key in float_keys:
+            sentient_being_type[key] = gffa_utils.convert_to_float(val)
+        elif key in list_keys:
+            sentient_being_type[key] = gffa_utils.convert_to_list(val, ', ')
+    return sentient_being_type
 
 # --------------- PREPARE SENTIENT_BEING_TYPE LIST ---------------
 
@@ -101,7 +135,7 @@ def main():
     # --------------- INSERT INTO FILM TABLE ---------------
     
     for film in film_data:
-        film_list = prepare_film_list(convert_data(film))
+        film_list = prepare_film_list(convert_film_data(film))
         sql = """INSERT INTO public.film(title, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (title) DO NOTHING"""
         # Execute to insert records into film table
         cur.execute(sql, film_list)
@@ -112,7 +146,7 @@ def main():
 
     for planet in planet_data:
         if planet["name"] != "unknown":
-            planet_list = prepare_planet_list(convert_data(planet))
+            planet_list = prepare_planet_list(convert_planet_data(planet))
             sql = """INSERT INTO public.planet(name, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (name) DO NOTHING"""
             # Execute to insert records into planet table
             cur.execute(sql, planet_list)
@@ -132,7 +166,7 @@ def main():
     # --------------- INSERT INTO SENTIENT_BEING_TYPE TABLE ---------------
     
     for species in species_data:
-        sentient_being_type_list = prepare_sentient_being_type_list(convert_data(species))
+        sentient_being_type_list = prepare_sentient_being_type_list(convert_sentient_being_type_data(species))
         # If language is None, it will assign id 34 made for None
         if sentient_being_type_list[1]!=None:
             sql = """SELECT language_id from public.language WHERE name=%s"""
