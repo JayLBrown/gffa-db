@@ -1,4 +1,6 @@
+import re
 import json
+from sys import intern
 
 # --------------- CONSTANTS ---------------
 
@@ -126,3 +128,25 @@ def convert_to_none(value):
             return value
     except:
         return value
+
+# --------------- EXTRACT INDEX FROM URL ---------------
+
+def get_index_from_url(value):
+    """Attempts to get numeral index from urls to ease the search across various
+    tables while inserting foreign keys.
+
+    Parameters:
+        value (obj): url string to extract index from
+
+    Returns:
+        int: index extracted from the url
+    """
+    try:
+        print("TESTING")
+        print(str(value))
+        if type(value) == str:
+            return re.findall("\d+", value)[-1]
+        else:
+            return re.findall("\d+", str(value))[-1]
+    except:
+        return 1
