@@ -141,7 +141,7 @@ def get_index_from_url(value):
         int: index extracted from the url
     """
     try:
-        if type(value) == str:
+        if isinstance(value, str):
             return re.findall("\d+", value)[-1]
         else:
             return re.findall("\d+", str(value))[-1]
