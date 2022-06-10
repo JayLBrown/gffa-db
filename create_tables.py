@@ -144,13 +144,15 @@ cur.execute(sql)
 sql = """CREATE TABLE IF NOT EXISTS public.vehicle_class
 (
     vehicle_class_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-	name text NOT NULL,
+	vehicle_type_id int,
+    name text NOT NULL,
     description text,
     attributes jsonb,
     attributes_orig jsonb,
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
 	PRIMARY KEY (vehicle_class_id),
+    FOREIGN KEY (vehicle_type_id) REFERENCES public.vehicle_type(vehicle_type_id),
     UNIQUE (name)
 )"""
 
@@ -162,7 +164,6 @@ cur.execute(sql)
 sql = """CREATE TABLE IF NOT EXISTS public.vehicle
 (
     vehicle_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-	vehicle_type_id integer NOT NULL,
 	vehicle_class_id integer NOT NULL,
     model text,
     description text,
@@ -171,7 +172,6 @@ sql = """CREATE TABLE IF NOT EXISTS public.vehicle
     date_created TIMESTAMP NOT NULL,
     date_modified TIMESTAMP,
 	PRIMARY KEY (vehicle_id),
-    FOREIGN KEY (vehicle_type_id) REFERENCES public.vehicle_type(vehicle_type_id),
     FOREIGN KEY (vehicle_class_id) REFERENCES public.vehicle_class(vehicle_class_id),
     UNIQUE (model)
 )"""
