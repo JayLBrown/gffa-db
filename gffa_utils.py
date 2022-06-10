@@ -1,6 +1,5 @@
 import re
 import json
-from sys import intern
 
 # --------------- CONSTANTS ---------------
 
@@ -142,8 +141,6 @@ def get_index_from_url(value):
         int: index extracted from the url
     """
     try:
-        print("TESTING")
-        print(str(value))
         if type(value) == str:
             return re.findall("\d+", value)[-1]
         else:

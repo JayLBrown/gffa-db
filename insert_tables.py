@@ -1,4 +1,3 @@
-from posixpath import split
 import requests
 import json
 import psycopg2
@@ -34,7 +33,7 @@ def prepare_film_list(film):
     film_list = []
     film_list.append(film["title"])
     film_list.append("description")
-    film_attr = dict((k, film[k]) for k in ['episode_id', 'opening_crawl', 'director', 'producer', 'release_date', 'characters', 'planets', 'starships', 'vehicles', 'species'])
+    film_attr = {k: film[k] for k in ['episode_id', 'opening_crawl', 'director', 'producer', 'release_date', 'characters', 'planets', 'starships', 'vehicles', 'species']}
     film_list.append(json.dumps(film_attr))
     film_list.append(json.dumps(film))
     film_list.append(datetime.datetime.now())
@@ -48,7 +47,7 @@ def prepare_planet_list(planet):
     planet_list = []
     planet_list.append(planet["name"])
     planet_list.append("description")
-    planet_attr = dict((k, planet[k]) for k in ['rotation_period', 'orbital_period', 'diameter', 'climate', 'gravity', 'terrain', 'surface_water', 'population', 'residents', 'films'])
+    planet_attr = {k: planet[k] for k in ['rotation_period', 'orbital_period', 'diameter', 'climate', 'gravity', 'terrain', 'surface_water', 'population', 'residents', 'films']}
     planet_list.append(json.dumps(planet_attr))
     planet_list.append(json.dumps(planet))
     planet_list.append(datetime.datetime.now())
@@ -73,7 +72,7 @@ def prepare_sentient_being_type_list(sentient_being_type):
     sentient_being_type_list.append(sentient_being_type["name"])
     sentient_being_type_list.append(sentient_being_type["language"])
     sentient_being_type_list.append("description")
-    sentient_being_type_attr = dict((k, sentient_being_type[k]) for k in ['classification', 'designation', 'average_height', 'skin_colors', 'hair_colors', 'eye_colors', 'average_lifespan', 'homeworld', 'language', 'people', 'films'])
+    sentient_being_type_attr = {k: sentient_being_type[k] for k in ['classification', 'designation', 'average_height', 'skin_colors', 'hair_colors', 'eye_colors', 'average_lifespan', 'homeworld', 'language', 'people', 'films']}
     sentient_being_type_list.append(json.dumps(sentient_being_type_attr))
     sentient_being_type_list.append(json.dumps(sentient_being_type))
     sentient_being_type_list.append(datetime.datetime.now())
@@ -89,7 +88,7 @@ def prepare_sentient_being_list(sentient_being):
     sentient_being_list.append(sentient_being["name"])
     sentient_being_list.append(sentient_being["name"])
     sentient_being_list.append("description")
-    sentient_being_attr = dict((k, sentient_being[k]) for k in ['height', 'mass', 'hair_color', 'skin_color', 'eye_color', 'birth_year', 'gender', 'films', 'species', 'vehicles', 'starships'])
+    sentient_being_attr = {k: sentient_being[k] for k in ['height', 'mass', 'hair_color', 'skin_color', 'eye_color', 'birth_year', 'gender', 'films', 'species', 'vehicles', 'starships']}
     sentient_being_list.append(json.dumps(sentient_being_attr))
     sentient_being_list.append(json.dumps(sentient_being))
     sentient_being_list.append(datetime.datetime.now())
@@ -111,11 +110,10 @@ def extract_vehicle_class_list(vehicle_data):
 
 def prepare_vehicle_list(vehicle):
     vehicle_list = []
-    vehicle_list.append(1)
     vehicle_list.append(vehicle["vehicle_class"])
     vehicle_list.append(vehicle["model"])
     vehicle_list.append("description")
-    vehicle_attr = dict((k, vehicle[k]) for k in ['model'])
+    vehicle_attr = {k: vehicle[k] for k in ['model']}
     vehicle_list.append(json.dumps(vehicle_attr))
     vehicle_list.append(json.dumps(vehicle))
     vehicle_list.append(datetime.datetime.now())
@@ -184,7 +182,6 @@ def main():
 
     for people in people_data:
         sentient_being_list = prepare_sentient_being_list(convert_data(people))
-        print(sentient_being_list)
         sql = """INSERT INTO public.sentient_being(sentient_being_type_id, home_world_id, name_first, name_last, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (name_first, name_last) DO NOTHING"""
         # Execute to insert records into sentient_being table
         cur.execute(sql, sentient_being_list)
@@ -203,7 +200,7 @@ def main():
 
     # --------------- INSERT INTO VEHICLE_TYPE TABLE ---------------
 
-    vehicle_type_list = ["Interstellar", "Sub-orbital", "Low Altitude", "Ground", "Aquatic"]
+    vehicle_type_list = ["Aerial", "Aquatic", "Ground", "Space"]
     for vehicle in vehicle_type_list:
         sql = """INSERT INTO public.vehicle_type(name, date_created, date_modified) VALUES (%s, %s, %s) ON CONFLICT (name) DO NOTHING"""
         # Execute to insert records into vehicle_type table
@@ -217,9 +214,9 @@ def main():
         vehicle_list = prepare_vehicle_list(vehicle)
         # Fetching vehicle_class_id from vehicle_class
         sql = """SELECT vehicle_class_id from public.vehicle_class WHERE name=%s"""
-        cur.execute(sql, (vehicle_list[1],))
-        vehicle_list[1] = cur.fetchone()
-        sql = """INSERT INTO public.vehicle(vehicle_type_id, vehicle_class_id, model, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) ON CONFLICT (model) DO NOTHING"""
+        cur.execute(sql, (vehicle_list[0],))
+        vehicle_list[0] = cur.fetchone()
+        sql = """INSERT INTO public.vehicle(vehicle_class_id, model, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s, %s) ON CONFLICT (model) DO NOTHING"""
         # Execute to insert records into vehicle table
         cur.execute(sql, vehicle_list)
         # Make the changes to the database persistent
