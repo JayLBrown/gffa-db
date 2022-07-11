@@ -2,7 +2,7 @@ import psycopg2
 import secrets
 
 # Connect to an existing database
-conn = psycopg2.connect(f"dbname=gffa_db user={secrets.USERNAME} password={secrets.PASSWORD}")
+conn = psycopg2.connect(f"dbname=gffa_db user={secrets.POSTGRES_USERNAME} password={secrets.POSTGRES_PASSWORD}")
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
