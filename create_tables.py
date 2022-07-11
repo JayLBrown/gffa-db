@@ -1,7 +1,8 @@
 import psycopg2
+import secrets
 
 # Connect to an existing database
-conn = psycopg2.connect("dbname=gffa_db user=postgres password=postgres")
+conn = psycopg2.connect(f"dbname=gffa_db user={secrets.USERNAME} password={secrets.PASSWORD}")
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
