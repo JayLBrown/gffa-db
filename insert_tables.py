@@ -2,6 +2,7 @@ import json
 import psycopg2
 import datetime
 import gffa_utils
+import secrets
 
 # --------------------------------------------- READ ALL DATA ---------------------------------------------
 film_data = gffa_utils.read_json('./data/swapi_json/swapi_films.json')
