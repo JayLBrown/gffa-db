@@ -1,8 +1,8 @@
-import requests
 import json
 import psycopg2
 import datetime
 import gffa_utils
+import secrets
 
 # --------------------------------------------- READ ALL DATA ---------------------------------------------
 film_data = gffa_utils.read_json('./data/swapi_json/swapi_films.json')
@@ -124,13 +124,13 @@ def prepare_vehicle_list(vehicle):
 def main():
 
     # Connect to an existing database
-    conn = psycopg2.connect("dbname=gffa_db user=postgres password=postgres")
+    conn = psycopg2.connect(f"dbname=gffa_db user={secrets.POSTGRES_USERNAME} password={secrets.POSTGRES_PASSWORD}")
 
     # Open a cursor to perform database operations
     cur = conn.cursor()
 
     # --------------- INSERT INTO FILM TABLE ---------------
-    
+
     for film in film_data:
         film_list = prepare_film_list(convert_data(film))
         sql = """INSERT INTO public.film(title, description, attributes, attributes_orig, date_created, date_modified) VALUES (%s, %s, %s, %s, %s, %s) ON CONFLICT (title) DO NOTHING"""
@@ -138,7 +138,7 @@ def main():
         cur.execute(sql, film_list)
         # Make the changes to the database persistent
         conn.commit()
-    
+
     # --------------- INSERT INTO PLANET TABLE ---------------
 
     for planet in planet_data:
